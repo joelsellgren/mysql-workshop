@@ -1,4 +1,4 @@
-import { getArtists, createArtist, getArtistById, updateArtist, deleteArtist } from '../mysql.js';
+import { getArtists, createArtist, getArtistById, updateArtist, deleteArtist, getArtistsAndAlbums } from '../mysql.js';
 
 export const getAllArtists = async (req, res) => {
   try {
@@ -26,6 +26,16 @@ export const getArtist = async (req, res) => {
   }
 };
 
+export const getAllArtistsAndAlbums = async (req, res) => {
+    try {
+      const artistsAndAlbums = await getArtistsAndAlbums();
+      res.json(artistsAndAlbums);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+
 export const createNewArtist = async (req, res) => {
   try {
     const newArtist = req.body;
@@ -42,7 +52,7 @@ export const updateArtistInfo = async (req, res) => {
       const artistId = req.params.id;
       const updatedArtist = req.body;
   
-      const success = await updateArtist(artistId, updatedArtist); // Update this line
+      const success = await updateArtist(artistId, updatedArtist);
   
       if (success) {
         res.json({ message: 'Artist updated successfully' });

@@ -28,6 +28,7 @@ const dbQueryCallback = (resolve, reject, single = false) => (err, result) => {
     resolve(result)
 }
 
+//Artist CRUD
 export const getArtists = async () => {
     const db = getDb()
 
@@ -82,4 +83,73 @@ export const createArtist = async (artist) => {
     });
   
     return result.affectedRows > 0;
+  };
+
+  //Album CRUD
+  export const getAlbums = async () => {
+    const db = getDb()
+
+    const albums = await new Promise((resolve, reject) => {
+        db.query('SELECT * FROM albums', dbQueryCallback(resolve, reject));
+    });
+
+    return albums
+}
+
+export const getAlbumById = async (albumId) => {
+    const db = getDb();
+  
+    const album = await new Promise((resolve, reject) => {
+      db.query('SELECT * FROM albums WHERE album_id = ?', albumId, dbQueryCallback(resolve, reject, true));
+    });
+  
+    return album;
+  };
+
+export const createAlbum = async (album) => {
+    const db = getDb();
+  
+    const newAlbum = await new Promise((resolve, reject) => {
+      db.query('INSERT INTO albums SET ?', album, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result.insertId);
+        }
+      });
+    });
+  
+    return newAlbum;
+  };
+
+  export const updateAlbum = async (albumId, updatedAlbum) => {
+    const db = getDb();
+  
+    const result = await new Promise((resolve, reject) => {
+      db.query('UPDATE albums SET ? WHERE albums_id = ?', [updatedAlbum, albumId], dbQueryCallback(resolve, reject));
+    });
+  
+    return result.affectedRows > 0;
+  };
+
+  export const deleteAlbum = async (albumId) => {
+    const db = getDb();
+  
+    const result = await new Promise((resolve, reject) => {
+      db.query('DELETE FROM albums WHERE albums_id = ?', albumId, dbQueryCallback(resolve, reject));
+    });
+  
+    return result.affectedRows > 0;
+  };
+  
+//Get artists and albums
+
+export const getArtistsAndAlbums = async () => {
+    const db = getDb();
+  
+    const artistsAndAlbums = await new Promise((resolve, reject) => {
+      db.query('SELECT * FROM artists LEFT JOIN albums ON artists.artist_id = albums.artist_id', dbQueryCallback(resolve, reject));
+    });
+  
+    return artistsAndAlbums;
   };
